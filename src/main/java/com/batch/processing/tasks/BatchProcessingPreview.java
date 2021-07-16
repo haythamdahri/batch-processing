@@ -1,4 +1,4 @@
-package com.bnp.lab;
+package com.check;
 
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
