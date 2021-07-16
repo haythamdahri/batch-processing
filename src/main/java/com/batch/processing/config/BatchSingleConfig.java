@@ -1,4 +1,4 @@
-package com.bnp.lab;
+package com.batch.processing.config;
 
 import java.util.Objects;
 
