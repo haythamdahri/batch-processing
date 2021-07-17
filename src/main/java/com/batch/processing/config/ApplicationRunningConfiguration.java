@@ -1,40 +1,96 @@
 package com.batch.processing.config;
 
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.batch.processing.bo.TBConfig;
+import com.batch.processing.commands.ICommand;
+import com.batch.processing.constants.BatchConstants;
+import com.batch.processing.dao.TBConfigDAO;
+import com.batch.processing.dto.ActionType;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.Scheduled;
+
+import java.util.List;
 
 @Configuration
-public class ApplicationRunningConfiguration {
+@ConditionalOnProperty(value = "com.batch.processing.populate-testing-data", havingValue = "true")
+public class ApplicationRunningConfiguration implements CommandLineRunner {
 
-    private static final String TIME = "time";
-    private static final String JOB_NAME = "jobName";
-    private static final String PROCESSING_JOB = "PROCESSING_JOB";
+    private final TBConfigDAO tbConfigDAO;
+    private final BeanFactory beanFactory;
 
-    private final JobLauncher jobLauncher;
-    private final Job processingJob;
-
-    public ApplicationRunningConfiguration(JobLauncher jobLauncher,
-                                           @Qualifier(PROCESSING_JOB) Job processingJob) {
-        this.jobLauncher = jobLauncher;
-        this.processingJob = processingJob;
+    public ApplicationRunningConfiguration(TBConfigDAO tbConfigDAO, BeanFactory beanFactory) {
+        this.tbConfigDAO = tbConfigDAO;
+        this.beanFactory = beanFactory;
     }
 
-    @Scheduled(cron = "0 58 20 * * *", zone = "Europe/Lisbon")
-    public void runBatchProcessing() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
-        jobParametersBuilder.addLong(TIME, System.currentTimeMillis()).toJobParameters();
-        jobParametersBuilder.addString(JOB_NAME, PROCESSING_JOB).toJobParameters();
-        // Run Job
-        this.jobLauncher.run(this.processingJob, jobParametersBuilder.toJobParameters());
-    }
+    @Override
+    public void run(String... args) {
+        System.out.println("RUNNING");
+        // Populate testing data
+        TBConfig copyToTempConfig = new TBConfig();
+        copyToTempConfig.setId(1L);
+        copyToTempConfig.setCommand(ActionType.COPY_TO_TEMP.name());
+        copyToTempConfig.setExecutionOrder("1");
+        copyToTempConfig.setSourcePath("C:\\FILES\\Input");
+        copyToTempConfig.setDestinationPath("C:\\FILES\\Output");
+        copyToTempConfig.setJobName(BatchConstants.GCU0);
+        copyToTempConfig.setJobDescription(BatchConstants.GCU0);
+        copyToTempConfig.setAdvancement("ADV");
+        copyToTempConfig.setJobId(BatchConstants.GCU0);
 
+        TBConfig copyToWorkDirConfig = new TBConfig();
+        copyToWorkDirConfig.setId(2L);
+        copyToWorkDirConfig.setCommand(ActionType.COPY_TO_WORKING_DIR.name());
+        copyToWorkDirConfig.setExecutionOrder("2");
+        copyToWorkDirConfig.setSourcePath("C:\\FILES\\Input");
+        copyToWorkDirConfig.setDestinationPath("C:\\FILES\\Output");
+        copyToWorkDirConfig.setJobName(BatchConstants.GCU0);
+        copyToWorkDirConfig.setJobDescription(BatchConstants.GCU0);
+        copyToWorkDirConfig.setAdvancement("ADV");
+        copyToWorkDirConfig.setJobId(BatchConstants.GCU0);
+
+        TBConfig deleteTempFiles = new TBConfig();
+        deleteTempFiles.setId(3L);
+        deleteTempFiles.setCommand(ActionType.DELETE_TEMP.name());
+        deleteTempFiles.setExecutionOrder("3");
+        deleteTempFiles.setSourcePath("C:\\FILES\\Input");
+        deleteTempFiles.setDestinationPath("C:\\FILES\\Output");
+        deleteTempFiles.setJobName(BatchConstants.GCU0);
+        deleteTempFiles.setJobDescription(BatchConstants.GCU0);
+        deleteTempFiles.setAdvancement("ADV");
+        deleteTempFiles.setJobId(BatchConstants.GCU0);
+
+        TBConfig renameDirFiles = new TBConfig();
+        renameDirFiles.setId(4L);
+        renameDirFiles.setCommand(ActionType.RENAME.name());
+        renameDirFiles.setExecutionOrder("4");
+        renameDirFiles.setSourcePath("C:\\FILES\\Input");
+        renameDirFiles.setDestinationPath("C:\\FILES\\Output");
+        renameDirFiles.setJobName(BatchConstants.GCU0);
+        renameDirFiles.setJobDescription(BatchConstants.GCU0);
+        renameDirFiles.setAdvancement("ADV");
+        renameDirFiles.setJobId(BatchConstants.GCU0);
+
+        TBConfig notify = new TBConfig();
+        notify.setId(5L);
+        notify.setCommand(ActionType.NOTIFY.name());
+        notify.setExecutionOrder("5");
+        notify.setSourcePath("C:\\FILES\\Input");
+        notify.setDestinationPath("C:\\FILES\\Output");
+        notify.setJobName(BatchConstants.GCU0);
+        notify.setJobDescription(BatchConstants.GCU0);
+        notify.setAdvancement("ADV");
+        notify.setJobId(BatchConstants.GCU0);
+
+        // Save
+        this.tbConfigDAO.saveAll(List.of(copyToTempConfig, copyToWorkDirConfig, deleteTempFiles, renameDirFiles, notify));
+
+        // Loop through config and execute
+        this.tbConfigDAO.findOrderedJobId(BatchConstants.GCU0).forEach(config -> {
+            System.out.println("Config Command: " + config.getCommand() + " | Order: " + config.getExecutionOrder());
+            beanFactory.getBean(config.getCommand(), ICommand.class).execute(config);
+        });
+
+    }
 }

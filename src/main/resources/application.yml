@@ -1,0 +1,40 @@
+#===================================================
+# Database Config
+#===================================================
+spring:
+  datasource:
+    url: jdbc:h2:mem:batchdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  #===================================================
+  # Mailing Config
+  #===================================================
+  mail:
+    host: smtp.gmail.com
+    password: YOUR_GENERATED_PASSWORD_FROM_SMTP_SERVER
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    sender: Enerild Hizmo
+    username: youremail@gmail.com
+#===================================================
+# Batch Config
+#===================================================
+com:
+  batch:
+    processing:
+      populate-testing-data: false
+      GCU0:
+          # Starts at 08:15 and run every hour until 18 from Monday to Friday
+          scheduling: '0 15/60 8-18 * * MON-FRI'
+      GCU1:
+          # Starts at 08:05 and run every hour until 19 from Monday to Friday
+          scheduling: '0 5/60 8-18 * * MON-FRI'
