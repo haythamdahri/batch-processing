@@ -6,7 +6,6 @@ import com.batch.processing.services.TBConfigService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TBConfigServiceImpl implements TBConfigService {
@@ -20,5 +19,10 @@ public class TBConfigServiceImpl implements TBConfigService {
     @Override
     public List<TBConfig> getOrderedTbConfig(String jobId) {
         return this.tbConfigDAO.findOrderedJobId(jobId);
+    }
+
+    @Override
+    public TBConfig getTbConfig(String jobId, String command) {
+        return this.tbConfigDAO.findJob(jobId, command);
     }
 }

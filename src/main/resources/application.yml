@@ -3,13 +3,14 @@
 #===================================================
 spring:
   datasource:
-    url: jdbc:h2:mem:batchdb
+    url: jdbc:h2:file:C:/FILES/Data
     driverClassName: org.h2.Driver
     username: sa
     password: password
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-
+    hibernate:
+      ddl-auto: update
   #===================================================
   # Mailing Config
   #===================================================
@@ -25,13 +26,16 @@ spring:
             enable: true
     sender: Enerild Hizmo
     username: youremail@gmail.com
+  batch:
+    jdbc:
+      initialize-schema: always
 #===================================================
 # Batch Config
 #===================================================
 com:
   batch:
     processing:
-      populate-testing-data: false
+      populate-testing-data: true
       GCU0:
           # Starts at 08:15 and run every hour until 18 from Monday to Friday
           scheduling: '0 15/60 8-18 * * MON-FRI'

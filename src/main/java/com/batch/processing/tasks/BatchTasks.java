@@ -3,53 +3,56 @@ package com.batch.processing.tasks;
 import com.batch.processing.bo.TBConfig;
 import com.batch.processing.commands.ICommand;
 import com.batch.processing.constants.BatchConstants;
-import com.batch.processing.services.TBConfigService;
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @Component
+@RestController
 public class BatchTasks {
 
-    private final TBConfigService tbConfigService;
-    private final BeanFactory beanFactory;
+    private final JobLauncher jobLauncher;
 
-    public BatchTasks(TBConfigService tbConfigService, BeanFactory beanFactory) {
-        this.tbConfigService = tbConfigService;
-        this.beanFactory = beanFactory;
+    private final Job jobGCU0;
+    private final Job jobGCU1;
+
+    public BatchTasks(JobLauncher jobLauncher,
+                      @Qualifier(BatchConstants.GCU0) Job jobGCU0,
+                      @Qualifier(BatchConstants.GCU1) Job jobGCU1) {
+        this.jobLauncher = jobLauncher;
+        this.jobGCU0 = jobGCU0;
+        this.jobGCU1 = jobGCU1;
     }
 
+    @GetMapping(path = "/")
     @Scheduled(cron = "${com.batch.processing.GCU0.scheduling}")
-    public void gcu0Task() {
-        // Get Steps
-        List<TBConfig> configList = this.tbConfigService.getOrderedTbConfig(BatchConstants.GCU0);
-        // Loop through config list and execute commands by provided order
-        for( TBConfig tbConfig : configList ) {
-            // Get command from db
-            ICommand command = this.beanFactory.getBean(tbConfig.getCommand(), ICommand.class);
-            // Check if command exists then execute it
-            if( command != null ) {
-                command.execute(tbConfig);
-            }
-        }
+    public void gcu0Task() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+        jobParametersBuilder.addLong(BatchConstants.TIME, System.currentTimeMillis()).toJobParameters();
+        jobParametersBuilder.addString(BatchConstants.BATCH_NAME, BatchConstants.GCU0).toJobParameters();
+        // Run Job
+        this.jobLauncher.run(this.jobGCU0, jobParametersBuilder.toJobParameters());
     }
 
 
     @Scheduled(cron = "${com.batch.processing.GCU1.scheduling}")
-    public void gcu1Task() {
-        // Get Steps
-        List<TBConfig> configList = this.tbConfigService.getOrderedTbConfig(BatchConstants.GCU1);
-        // Loop through config list and execute commands by provided order
-        for( TBConfig tbConfig : configList ) {
-            // Get command from db
-            ICommand command = this.beanFactory.getBean(tbConfig.getCommand(), ICommand.class);
-            // Check if command exists then execute it
-            if( command != null ) {
-                command.execute(tbConfig);
-            }
-        }
+    public void gcu1Task() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+        jobParametersBuilder.addLong(BatchConstants.TIME, System.currentTimeMillis()).toJobParameters();
+        jobParametersBuilder.addString(BatchConstants.BATCH_NAME, BatchConstants.GCU1).toJobParameters();
+        // Run Job
+        this.jobLauncher.run(this.jobGCU1, jobParametersBuilder.toJobParameters());
     }
 
 }

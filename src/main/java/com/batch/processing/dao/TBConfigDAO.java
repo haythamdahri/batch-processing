@@ -14,4 +14,7 @@ public interface TBConfigDAO extends JpaRepository<TBConfig, Long> {
     @Query(value = "FROM TBConfig TB WHERE TB.jobId = :jobId ORDER BY TB.executionOrder ASC")
     List<TBConfig> findOrderedJobId(@Param("jobId") String jobId);
 
+    @Query(value = "FROM TBConfig TB WHERE TB.jobId = :jobId AND TB.command = :command")
+    TBConfig findJob(@Param("jobId") String jobId, @Param("command") String command);
+
 }

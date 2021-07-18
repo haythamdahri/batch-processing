@@ -2,19 +2,27 @@ package com.batch.processing.commands;
 
 import com.batch.processing.bo.TBConfig;
 import com.batch.processing.constants.BatchConstants;
+import com.batch.processing.services.TBConfigService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
+import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service("COPY_TO_TEMP")
 @Log4j2
-public class CopyToTempCommand implements ICommand {
+public class CopyToTempCommand implements ICommand, Tasklet {
+
+    private final TBConfigService tbConfigService;
+
+    public CopyToTempCommand(TBConfigService tbConfigService) {
+        this.tbConfigService = tbConfigService;
+    }
 
     /**
      * Custom command to merge source path files and copy merged file into temp directory
@@ -67,4 +75,15 @@ public class CopyToTempCommand implements ICommand {
         }
     }
 
+    @Override
+    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+        // Get TBConfig from execution context
+        String jobId = (String) chunkContext.getStepContext().getJobParameters().get(BatchConstants.BATCH_NAME);
+        TBConfig tbConfig = this.tbConfigService.getTbConfig(jobId, "COPY_TO_TEMP");
+        System.out.println(tbConfig);
+        // Execute
+        this.execute(tbConfig);
+        // Return Status
+        return RepeatStatus.FINISHED;
+    }
 }

@@ -8,4 +8,6 @@ public interface TBConfigService {
 
     List<TBConfig> getOrderedTbConfig(String jobId);
 
+    TBConfig getTbConfig(String jobId, String command);
+
 }

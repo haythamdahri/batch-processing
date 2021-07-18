@@ -2,22 +2,28 @@ package com.batch.processing.commands;
 
 import com.batch.processing.bo.TBConfig;
 import com.batch.processing.constants.BatchConstants;
+import com.batch.processing.services.TBConfigService;
 import com.batch.processing.utils.FileUtils;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.FilenameUtils;
+import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
 import java.util.Set;
 
 @Service("COPY_TO_WORKING_DIR")
 @Log4j2
-public class CopyToWorkDirCommand implements ICommand {
+public class CopyToWorkDirCommand implements ICommand, Tasklet {
+
+    private final TBConfigService tbConfigService;
+
+    public CopyToWorkDirCommand(TBConfigService tbConfigService) {
+        this.tbConfigService = tbConfigService;
+    }
 
     /**
      * Custom command to copy temp created files into work directory path
@@ -54,8 +60,19 @@ public class CopyToWorkDirCommand implements ICommand {
                 }
             }
         } catch (Exception ex) {
-            log.error("Error during execution of CopyToTempCommand | Exception message: {}", ex.getMessage());
+            log.error("Error during execution of CopyToWorkDirCommand | Exception message: {}", ex.getMessage());
         }
+    }
+
+    @Override
+    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+        // Get TBConfig from execution context
+        String jobId = (String) chunkContext.getStepContext().getJobParameters().get(BatchConstants.BATCH_NAME);
+        TBConfig tbConfig = this.tbConfigService.getTbConfig(jobId, "COPY_TO_WORKING_DIR");
+        // Execute
+        this.execute(tbConfig);
+        // Return Status
+        return RepeatStatus.FINISHED;
     }
 
 }

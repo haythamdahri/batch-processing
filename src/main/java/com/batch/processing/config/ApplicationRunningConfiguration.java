@@ -86,11 +86,5 @@ public class ApplicationRunningConfiguration implements CommandLineRunner {
         // Save
         this.tbConfigDAO.saveAll(List.of(copyToTempConfig, copyToWorkDirConfig, deleteTempFiles, renameDirFiles, notify));
 
-        // Loop through config and execute
-        this.tbConfigDAO.findOrderedJobId(BatchConstants.GCU0).forEach(config -> {
-            System.out.println("Config Command: " + config.getCommand() + " | Order: " + config.getExecutionOrder());
-            beanFactory.getBean(config.getCommand(), ICommand.class).execute(config);
-        });
-
     }
 }
