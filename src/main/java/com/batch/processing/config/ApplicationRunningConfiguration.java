@@ -5,6 +5,7 @@ import com.batch.processing.commands.ICommand;
 import com.batch.processing.constants.BatchConstants;
 import com.batch.processing.dao.TBConfigDAO;
 import com.batch.processing.dto.ActionType;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,14 +15,13 @@ import java.util.List;
 
 @Configuration
 @ConditionalOnProperty(value = "com.batch.processing.populate-testing-data", havingValue = "true")
+@Log4j2
 public class ApplicationRunningConfiguration implements CommandLineRunner {
 
     private final TBConfigDAO tbConfigDAO;
-    private final BeanFactory beanFactory;
 
-    public ApplicationRunningConfiguration(TBConfigDAO tbConfigDAO, BeanFactory beanFactory) {
+    public ApplicationRunningConfiguration(TBConfigDAO tbConfigDAO) {
         this.tbConfigDAO = tbConfigDAO;
-        this.beanFactory = beanFactory;
     }
 
     @Override
@@ -86,5 +86,7 @@ public class ApplicationRunningConfiguration implements CommandLineRunner {
         // Save
         this.tbConfigDAO.saveAll(List.of(copyToTempConfig, copyToWorkDirConfig, deleteTempFiles, renameDirFiles, notify));
 
+        // Log message
+        log.info("Testing data has been populated successfully");
     }
 }

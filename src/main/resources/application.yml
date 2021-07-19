@@ -3,14 +3,18 @@
 #===================================================
 spring:
   datasource:
-    url: jdbc:h2:file:C:/FILES/Data
-    driverClassName: org.h2.Driver
-    username: sa
-    password: password
+    url: jdbc:oracle:thin:@//localhost:31521/XE
+    driver-class-name: oracle.jdbc.OracleDriver
+    username: exp_sesame
+    password: exp_sesame
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: oracle.jdbc.OracleDriver
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.Oracle10gDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+    show-sql: true
   #===================================================
   # Mailing Config
   #===================================================
@@ -27,15 +31,15 @@ spring:
     sender: Enerild Hizmo
     username: youremail@gmail.com
   batch:
-    jdbc:
-      initialize-schema: always
+    job:
+      enabled: false
 #===================================================
 # Batch Config
 #===================================================
 com:
   batch:
     processing:
-      populate-testing-data: true
+      populate-testing-data: false
       GCU0:
           # Starts at 08:15 and run every hour until 18 from Monday to Friday
           scheduling: '0 15/60 8-18 * * MON-FRI'

@@ -18,34 +18,34 @@ public class TBConfig implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "NUMBER")
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "EXECUTION_ORDER")
+    @Column(name = "EXECUTIONORDER")
     private String executionOrder;
 
     @Column(name = "COMMAND")
     private String command;
 
-    @Column(name = "ID_JOB")
+    @Column(name = "IDJOB")
     private String jobId;
 
-    @Column(name = "JOB_NAME")
+    @Column(name = "JOBNAME")
     private String jobName;
 
-    @Column(name = "DESC_JOB")
+    @Column(name = "DESCJOB")
     private String jobDescription;
 
-    @Column(name = "ID_STEP")
+    @Column(name = "IDSTEP")
     private int stepId;
 
-    @Column(name = "ID_OPERAZIONE")
+    @Column(name = "IDOPERAZIONE")
     private int operationId;
 
-    @Column(name = "SOURCE_PATH")
+    @Column(name = "SOURCEPATH")
     private String sourcePath;
 
-    @Column(name = "DESTINATION_PATH")
+    @Column(name = "DESTINATIONPATH")
     private String destinationPath;
 
     @Column(name = "SCHEDULATION")
@@ -57,16 +57,16 @@ public class TBConfig implements Serializable {
     @Column(name = "TYPE")
     private String type;
 
-    @Column(name = "IDUSER_INS")
+    @Column(name = "IDUSERINS")
     private String userIdInsert;
 
-    @Column(name = "INSERT_DATE")
+    @Column(name = "INSERTDATE")
     private Date insertDate;
 
-    @Column(name = "IDUSER_UPD")
+    @Column(name = "IDUSERUPD")
     private String userIdUpdate;
 
-    @Column(name = "LAST_UPDATE")
+    @Column(name = "LASTUPDATE")
     @Version
     private Timestamp lastUpdate;
 

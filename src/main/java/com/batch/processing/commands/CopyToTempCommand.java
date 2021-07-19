@@ -79,6 +79,7 @@ public class CopyToTempCommand implements ICommand, Tasklet {
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
         // Get TBConfig from execution context
         String jobId = (String) chunkContext.getStepContext().getJobParameters().get(BatchConstants.BATCH_NAME);
+        System.out.println(chunkContext.getStepContext().getJobParameters());
         TBConfig tbConfig = this.tbConfigService.getTbConfig(jobId, "COPY_TO_TEMP");
         System.out.println(tbConfig);
         // Execute
