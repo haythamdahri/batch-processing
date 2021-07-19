@@ -42,7 +42,7 @@ com:
       populate-testing-data: false
       GCU0:
           # Starts at 08:15 and run every hour until 18 from Monday to Friday
-          scheduling: '0 15/60 8-18 * * MON-FRI'
+          scheduling: 0 * * * * *
       GCU1:
           # Starts at 08:05 and run every hour until 19 from Monday to Friday
-          scheduling: '0 5/60 8-18 * * MON-FRI'
+          scheduling: 0 5/60 8-18 * * MON-FRI

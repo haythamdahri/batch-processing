@@ -1,7 +1,5 @@
 package com.batch.processing.tasks;
 
-import com.batch.processing.bo.TBConfig;
-import com.batch.processing.commands.ICommand;
 import com.batch.processing.constants.BatchConstants;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -11,15 +9,13 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @Component
-@RestController
+@EnableScheduling
 public class BatchTasks {
 
     private final JobLauncher jobLauncher;
@@ -35,7 +31,6 @@ public class BatchTasks {
         this.jobGCU1 = jobGCU1;
     }
 
-    @GetMapping(path = "/")
     @Scheduled(cron = "${com.batch.processing.GCU0.scheduling}")
     public void gcu0Task() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
