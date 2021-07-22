@@ -9,6 +9,7 @@ public class BatchConstants {
     public static final String DOT = ".";
     public static final String UNDERSCORE = "_";
     public static final String TIME = "time";
+    public static final String SOURCE_FILES_SPLITTER = "\\+";
 
     // BATCH NAMES
     public static final String GCU0 = "GCU0";

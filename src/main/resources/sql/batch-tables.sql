@@ -81,3 +81,37 @@ CREATE SEQUENCE BATCH_JOB_EXECUTION_SEQ1 START WITH 0 MINVALUE 0 MAXVALUE 922337
 CREATE SEQUENCE BATCH_JOB_SEQ1 START WITH 0 MINVALUE 0 MAXVALUE 9223372036854775807 NOCYCLE;
 
 COMMIT;
+
+--1, batch task serial number
+create sequence BATCH_JOB_SEQ
+    minvalue 0
+    maxvalue 9999999999999999999
+    start with 0
+    increment by 1
+    cache 20;
+
+-- 2, batch task execution serial number
+create sequence BATCH_JOB_EXECUTION_SEQ
+    minvalue 0
+    maxvalue 9999999999999999999
+    start with 0
+    increment by 1
+    cache 20;
+
+
+--3, batch step execution serial number
+create sequence BATCH_STEP_EXECUTION_SEQ
+    minvalue 0
+    maxvalue 9999999999999999999
+    start with 0
+    increment by 1
+    cache 20;
+
+
+--check sentence
+select a.*,rowId from    BATCH_JOB_INSTANCE a;
+select a.*,rowId from    BATCH_JOB_EXECUTION a;
+select a.*,rowId from    BATCH_JOB_EXECUTION_PARAMS a;
+select a.*,rowId from    BATCH_STEP_EXECUTION a;
+select a.*,rowId from    BATCH_STEP_EXECUTION_CONTEXT a;
+select a.*,rowId from    BATCH_JOB_EXECUTION_CONTEXT a;

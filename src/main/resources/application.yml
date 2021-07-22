@@ -20,6 +20,7 @@ spring:
   #===================================================
   mail:
     host: smtp.gmail.com
+    username: youremail@gmail.com
     password: YOUR_GENERATED_PASSWORD_FROM_SMTP_SERVER
     port: 587
     properties:
@@ -29,7 +30,6 @@ spring:
           starttls:
             enable: true
     sender: Enerild Hizmo
-    username: youremail@gmail.com
   batch:
     job:
       enabled: false

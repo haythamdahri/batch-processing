@@ -32,7 +32,7 @@ public class ApplicationRunningConfiguration implements CommandLineRunner {
         copyToTempConfig.setId(1L);
         copyToTempConfig.setCommand(ActionType.COPY_TO_TEMP.name());
         copyToTempConfig.setExecutionOrder("1");
-        copyToTempConfig.setSourcePath("C:\\FILES\\Input");
+        copyToTempConfig.setSourcePath("C:\\FILES\\Input\\Data.txt+C:\\FILES\\Input\\Data1.txt");
         copyToTempConfig.setDestinationPath("C:\\FILES\\Output");
         copyToTempConfig.setJobName(BatchConstants.GCU0);
         copyToTempConfig.setJobDescription(BatchConstants.GCU0);
